@@ -1,0 +1,19 @@
+
+
+DEVO PULIIRE IL FILE DI MAPPING DAI SEGMENTI [ DECLARED ]
+
+cat first_party_segments_6e454576-c9e9-45c7-b943-0d1c889ba4c0.csv | grep -v "\[DECLARED\]" | grep . > first_party_segments_NO_DECLARED.csv
+
+FACCIO CONTROLLO DEL SESSO RIPORTATO SU KRUX E RENDO LA LISTA CODE\SEX\SEGMENTS
+
+python3 check_sex_kruxvsanag_v2.py -e ../../anagrafica_files/v2/ePRICE_20160919.txt -s ../../anagrafica_files/v2/SaldiPrivati_20160919.txt -k ../../anagrafica_files/v2/ALL_audience_segment_map.txt -o ../../anagrafica_files/v2/sex_check_outTmp_200916
+
+CREO LA LISTA DI SEGMENTI CHE DIFFERENZIANO MEGLIO M DA F
+
+python3 full_search_uniq_segm_v2.py -f ../../anagrafica_files/v2/sex_check_ALL_aud_200916_training -o ../../anagrafica_files/v2/Segments4Class_200916 -m ../../anagrafica_files/v2/first_party_segments_6e454576-c9e9-45c7-b943-0d1c889ba4c0.csv
+
+CREO LA LISTA CON L'ARRAY DI 1 E 0 PER OGNI UTENTE
+
+python3 create_features_array_v2.py -f ../../anagrafica_files/v2/sex_check_ALL_aud_200916_training -o ../../anagrafica_files/v2/List4Keras_ALL_aud_200916 -l  ../../anagrafica_files/v2/list4keras_ALL_aud_200916_list
+
+NOTA: allo stato attuale la lista di features può cambiare
