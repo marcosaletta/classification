@@ -12,7 +12,6 @@ import random
 # SOGLIA_COUNT_F=2000
 # SOGLIA_COUNT_M=500
 
-NUM_TRAINING=100000
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -60,71 +59,51 @@ class CreateFeaturesArray:
         self.inFile_name = inFile
         self.outFile_name = outFile
         self.segmList=segmList
-        self.dict_users={}
+#        self.dict_users={}
 #        logging.info('Created Object for segments list of each user (0,1), with sex (1=F,0=M)')
 
-    def CreateDictWithSex(self):
+    def CheckAndPrint(self):
         count=0
-        with open(self.inFile_name,'r') as fi:
-            self.reader = csv.DictReader(fi,delimiter='/')
-#            print('sem list>>>>>>>>>>>>>>',self.segmList)
-            for row in self.reader:
-#                print(row)
+        with open(self.inFile_name,'r') as fi, ith open(self.outFile_name+"_WITH_SEX",'w') as sex, with open(self.outFile_name+"_NO_SEX",'w') as asex:
+            for line in fi:
+                splitted=line.split("^")
+                segments=splitted[-1].split(",")
                 count+=1
                 find=0
+                sex=0
+                num_sex=0
+                num_asex=0
                 tmp_list=[]
 #                print("row['SEGMENTS'].split(',')",row['SEGMENTS'].split(','))
                 for segm in self.segmList:
-                    if segm.strip("'") in row['SEGMENTS'].split(','):
+                    if segm.strip("'") in segments:
                         tmp_list.append('1')
                         find=1
                     else:
                         tmp_list.append('0')
-                if row['SEX']=='F':
+                if 'JmvTH_eE' in segments and 'JmvTheyd' not in segments:
                     tmp_list.append('1')
-                else:
+                    sex=1
+                else 'JmvTH_eE' not in segments and 'JmvTheyd' in segments:
                     tmp_list.append('0')
+                    sex=1
                 if find==1:
-                    self.dict_users[row['CODE']]=tmp_list
-            logging.info('Created Dictionary for user: key is the code, value the list os segments')
-            logging.info('Number of row in rader: %i'%count)
+                    if sex=1:
+                        num_sex+=1
+                        for ele in tmp_list:
+                            sex.write(ele+",")
+                        sex.write("\n")
+                    else:
+                        num_asex+=1
+                        for ele in tmp_list:
+                            asex.write(ele+",")
+                    asex.write("\n")
+
+            logging.info('Printed list of features for user')
+            logging.info('Printed feature for %i users with sex info in %s'%(num_sex,self.outFile_name+"_WITH_SEX"))
+            logging.info('Printed feature for %i users without sex info in %s'%(num_asex,self.outFile_name+"_NO_SEX"))
+            logging.info('Number of row in the original inFile: %i'%count)
             return self.dict_users
-
-
-class SelectRandomList:
-    """Class to select a random list pof user for validation"""
-    def __init__(self,outFile,dict_validation):
-        self.outFile_name = outFile
-        self.dict_validation=dict_validation
-        self.dict_training={}
-        logging.info('Created Object random lists to be use in training ad validation')
-
-
-    def SelectRandomList(self):
-#        print(self.dict_validation)
-        logging.info("Using a training set of %i"%NUM_TRAINING)
-        logging.info("Using a validation set of %i"%len(self.dict_validation.keys()))
-        random_keys=random.sample(self.dict_validation.keys(),NUM_TRAINING)
-#        print('random_keys',random_keys)
-        for key in random_keys:
-            self.dict_training[key]=self.dict_validation.pop(key)
-        logging.info('Created dicts for training and validation')
-#        print(self.dict_training)
-
-
-    def PrintRandomLists(self):
-        logging.info('Printing the dictionaries to ut files')
-        with open(self.outFile_name+'_valid','w') as out:
-            writer = csv.writer(out,delimiter=',')
-#            writer.writerow(self.dict_validation.keys())
-#            writer.writerows(zip(*self.dict_validation.values()))
-            for key, value in self.dict_validation.items():
-                writer.writerow(value)
-        with open(self.outFile_name+'_train','w') as out:
-            writer = csv.writer(out,delimiter=',')
-            for key, value in self.dict_training.items():
-                writer.writerow(value)
-
 
 
 
@@ -134,18 +113,9 @@ def main(inFile,outFile,allSegmts):
     logging.info("Creation of segments list")
     segmList_ob=SegmentsList(allSegmts)
     segmList=segmList_ob.CreateList()
-    logging.info("Creation of dictionary of arrays of segments for classification")
-    logging.info("Keys=users code, value=array of 1 and 0")
-    logging.info("1= has segments. Last one: 1=F, 0=M")
+    logging.info("Creating lists of features, 1= has segments. Last one: 1=F, 0=M")
     features_array_ob=CreateFeaturesArray(inFile,segmList)
-    dict_users=features_array_ob.CreateDictWithSex()
-#    print("dict_users")
-#    pprint(dict_users)
-    logging.info("Random selection of lists for training and validation using %i lines for training"%NUM_TRAINING)
-    logging.warning("IF THE DIMENSION OF THE TRAINING SET IS 0, THE SELECTION WILL BE DONE IN THE CLASSIFICATION SCRIPT")
-    random_lists_ob=SelectRandomList(outFile,dict_users)
-#    random_lists_ob.SelectRandomList()
-    random_lists_ob.PrintRandomLists()
+    dict_users=features_array_ob.CheckAndPrint()
     logging.info("END")
 
 
