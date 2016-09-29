@@ -64,13 +64,13 @@ class CreateFeaturesArray:
 
     def CheckAndPrint(self):
         count=0
-        with open(self.inFile_name,'r') as fi, ith open(self.outFile_name+"_WITH_SEX",'w') as sex, with open(self.outFile_name+"_NO_SEX",'w') as asex:
+        with open(self.inFile_name,'r') as fi, open(self.outFile_name+"_WITH_SEX",'w') as sex, open(self.outFile_name+"_NO_SEX",'w') as asex:
             for line in fi:
                 splitted=line.split("^")
                 segments=splitted[-1].split(",")
                 count+=1
                 find=0
-                sex=0
+                has_sex=0
                 num_sex=0
                 num_asex=0
                 tmp_list=[]
@@ -83,27 +83,26 @@ class CreateFeaturesArray:
                         tmp_list.append('0')
                 if 'JmvTH_eE' in segments and 'JmvTheyd' not in segments:
                     tmp_list.append('1')
-                    sex=1
-                else 'JmvTH_eE' not in segments and 'JmvTheyd' in segments:
+                    has_sex=1
+                elif 'JmvTH_eE' not in segments and 'JmvTheyd' in segments:
                     tmp_list.append('0')
-                    sex=1
+                    has_sex=1
                 if find==1:
-                    if sex=1:
+                    if has_sex==1:
                         num_sex+=1
-                        for ele in tmp_list:
+                        for ele in tmp_list[:-1]:
                             sex.write(ele+",")
-                        sex.write("\n")
+                        sex.write(tmp_list[-1]+"\n")
                     else:
                         num_asex+=1
-                        for ele in tmp_list:
+                        for ele in tmp_list[:-1]:
                             asex.write(ele+",")
-                    asex.write("\n")
-
+                    	asex.write(tmp_list[-1]+"\n")
             logging.info('Printed list of features for user')
             logging.info('Printed feature for %i users with sex info in %s'%(num_sex,self.outFile_name+"_WITH_SEX"))
             logging.info('Printed feature for %i users without sex info in %s'%(num_asex,self.outFile_name+"_NO_SEX"))
             logging.info('Number of row in the original inFile: %i'%count)
-            return self.dict_users
+#            return self.dict_users
 
 
 
