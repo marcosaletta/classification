@@ -17,3 +17,5 @@ CREO LA LISTA CON L'ARRAY DI 1 E 0 PER OGNI UTENTE
 python3 create_features_array_v2.py -f ../../anagrafica_files/v2/sex_check_ALL_aud_200916_training -o ../../anagrafica_files/v2/List4Keras_ALL_aud_200916 -l  ../../anagrafica_files/v2/list4keras_ALL_aud_200916_list
 
 NOTA: allo stato attuale la lista di features può cambiare
+
+come lista di utenti con anagrafica ho 819694 in sex_check_ALL_aud_200916_training

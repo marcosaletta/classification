@@ -144,7 +144,7 @@ def main(inFile,outFile,allSegmts):
     logging.info("Random selection of lists for training and validation using %i lines for training"%NUM_TRAINING)
     logging.warning("IF THE DIMENSION OF THE TRAINING SET IS 0, THE SELECTION WILL BE DONE IN THE CLASSIFICATION SCRIPT")
     random_lists_ob=SelectRandomList(outFile,dict_users)
-#    random_lists_ob.SelectRandomList()
+    random_lists_ob.SelectRandomList()
     random_lists_ob.PrintRandomLists()
     logging.info("END")
 

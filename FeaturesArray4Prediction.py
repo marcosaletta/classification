@@ -97,7 +97,7 @@ class CreateFeaturesArray:
                         num_asex+=1
                         for ele in tmp_list[:-1]:
                             asex.write(ele+",")
-                    	asex.write(tmp_list[-1]+"\n")
+                        asex.write(tmp_list[-1]+"\n")
             logging.info('Printed list of features for user')
             logging.info('Printed feature for %i users with sex info in %s'%(num_sex,self.outFile_name+"_WITH_SEX"))
             logging.info('Printed feature for %i users without sex info in %s'%(num_asex,self.outFile_name+"_NO_SEX"))
