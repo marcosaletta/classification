@@ -45,7 +45,6 @@ LAST_ASM=`aws s3 ls s3://${K_S3BUCKET}/${ASM_DIR}/ | tail -1`
 echo "Last audience-segment-map:" ${LAST_ASM}
 LAST_DAY=`python -c "import sys; print(sys.argv[2].strip('/'))" ${LAST_ASM}`
 echo "Last Day:" ${LAST_DAY}
-
 mkdir -p ${ASM_DIR}/${LAST_DAY}
 
 cd ${ASM_DIR}/${LAST_DAY}
@@ -68,9 +67,9 @@ python3 FeaturesArray4Prediction.py -f ${WDIR}/${ASM_FILE} -o ${WDIR}/${LISTS_US
 echo "Moving to ${SDIR_KERAS}"
 cd ${SDIR_KERAS}
 echo "EVALUATE model on the users with sex info"
-python keras_load_model.py -w ${MODEL_DIR}/${MODEL_WEIGHT} -j ${MODEL_DIR}/${MODEL_JSON} -f ${WDIR}/${LISTS_USERS_WITH_SEX} -o ${WDIR}/${MODEL_EV}
+python keras_load_model_bigData.py -w ${MODEL_DIR}/${MODEL_WEIGHT} -j ${MODEL_DIR}/${MODEL_JSON} -f ${WDIR}/${LISTS_USERS_WITH_SEX} -o ${WDIR}/${MODEL_EV}
 echo "EVALUATE model on the users withOUT sex info"
-python keras_load_model.py -w ${MODEL_DIR}/${MODEL_WEIGHT} -j ${MODEL_DIR}/${MODEL_JSON} -f ${WDIR}/${LISTS_USERS_NO_SEX} -o ${WDIR}/${MODEL_PRED}
+python keras_load_model_bigData.py -w ${MODEL_DIR}/${MODEL_WEIGHT} -j ${MODEL_DIR}/${MODEL_JSON} -f ${WDIR}/${LISTS_USERS_NO_SEX} -o ${WDIR}/${MODEL_PRED}
 # copy to keras-class
 echo "Exporting to ${KERAS_BUCKET}"
 export AWS_DEFAULT_PROFILE=banzaimedia
