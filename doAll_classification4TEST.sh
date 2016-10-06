@@ -30,9 +30,9 @@ WWW_DOC_ROOT=/var/www/bigdata/gold5/
 echo "BEGIN:"`date`
 echo "IO sono:"`whoami`
 echo $PATH
-rm -rf ${WDIR}
-mkdir ${WDIR}
-cd ${WDIR}
+#rm -rf ${WDIR}
+#mkdir ${WDIR}
+#cd ${WDIR}
 #
 # Read from KRUX
 #
@@ -40,36 +40,36 @@ export AWS_DEFAULT_PROFILE=kruxnew
 # AUDIENCE-SEGMENT-MAP
 # get the last day available from audience-segment-map
 python --version
-/home/liquida/anaconda3/bin/aws s3 ls s3://${K_S3BUCKET}/${ASM_DIR}/${LAST_DAY}/
+#/home/liquida/anaconda3/bin/aws s3 ls s3://${K_S3BUCKET}/${ASM_DIR}/${LAST_DAY}/
 LAST_ASM=`aws s3 ls s3://${K_S3BUCKET}/${ASM_DIR}/ | tail -1`
 echo "Last audience-segment-map:" ${LAST_ASM}
 LAST_DAY=`python -c "import sys; print(sys.argv[2].strip('/'))" ${LAST_ASM}`
 echo "Last Day:" ${LAST_DAY}
-mkdir -p ${ASM_DIR}/${LAST_DAY}
+#mkdir -p ${ASM_DIR}/${LAST_DAY}
 
-cd ${ASM_DIR}/${LAST_DAY}
+#cd ${ASM_DIR}/${LAST_DAY}
 
 #
 # get audience-segment-map last-day
 #
 echo "Copy from s3://${K_S3BUCKET}/${ASM_DIR}/${LAST_DAY}/"
-aws s3 cp s3://${K_S3BUCKET}/${ASM_DIR}/${LAST_DAY}/ . --recursive
-zcat *.gz > ${ASM_FILE}
-mv ${ASM_FILE} ../../
+#aws s3 cp s3://${K_S3BUCKET}/${ASM_DIR}/${LAST_DAY}/ . --recursive
+#zcat *.gz > ${ASM_FILE}
+#mv ${ASM_FILE} ../../
 
 #seguenza SCRIPT
-cd $SDIR_KRUX
+#cd $SDIR_KRUX
 #create the lists of segments
 echo "Preparing lists with the array of 0/1 for the selected segments"
 echo "The list of user with sex will be used for evaluation of the models"
 echo "The list of user with sex will be used for prediction"
-python3 FeaturesArray4Prediction.py -f ${WDIR}/${ASM_FILE} -o ${WDIR}/${LISTS_USERS} -l ${SDIR_KRUX}/${LISTS_SELCETED_SEGMENTS}
+#python3 FeaturesArray4Prediction.py -f ${WDIR}/${ASM_FILE} -o ${WDIR}/${LISTS_USERS} -l ${SDIR_KRUX}/${LISTS_SELCETED_SEGMENTS}
 echo "Moving to ${SDIR_KERAS}"
 cd ${SDIR_KERAS}
 echo "EVALUATE model on the users with sex info"
-python keras_load_model_bigData.py -w ${MODEL_DIR}/${MODEL_WEIGHT} -j ${MODEL_DIR}/${MODEL_JSON} -f ${WDIR}/${LISTS_USERS_WITH_SEX} -o ${WDIR}/${MODEL_EV}
+python keras_load_model_bigData.py -w ${MODEL_DIR}/${MODEL_WEIGHT} -j ${MODEL_DIR}/${MODEL_JSON} -f ${WDIR}/${LISTS_USERS_WITH_SEX} -o ${WDIR}/${MODEL_EV} -s 1
 echo "EVALUATE model on the users withOUT sex info"
-python keras_load_model_bigData.py -w ${MODEL_DIR}/${MODEL_WEIGHT} -j ${MODEL_DIR}/${MODEL_JSON} -f ${WDIR}/${LISTS_USERS_NO_SEX} -o ${WDIR}/${MODEL_PRED}
+python keras_load_model_bigData.py -w ${MODEL_DIR}/${MODEL_WEIGHT} -j ${MODEL_DIR}/${MODEL_JSON} -f ${WDIR}/${LISTS_USERS_NO_SEX} -o ${WDIR}/${MODEL_PRED} -s 0
 # copy to keras-class
 echo "Exporting to ${KERAS_BUCKET}"
 export AWS_DEFAULT_PROFILE=banzaimedia

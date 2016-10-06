@@ -67,6 +67,7 @@ class CreateFeaturesArray:
         with open(self.inFile_name,'r') as fi, open(self.outFile_name+"_WITH_SEX",'w') as sex, open(self.outFile_name+"_NO_SEX",'w') as asex:
             for line in fi:
                 splitted=line.split("^")
+                code=splitted[0]
                 segments=splitted[-1].split(",")
                 count+=1
                 find=0
@@ -90,11 +91,13 @@ class CreateFeaturesArray:
                 if find==1:
                     if has_sex==1:
                         num_sex+=1
+                        sex.write(str(code)+'|')
                         for ele in tmp_list[:-1]:
                             sex.write(ele+",")
                         sex.write(tmp_list[-1]+"\n")
                     else:
                         num_asex+=1
+                        asex.write(str(code)+'|')
                         for ele in tmp_list[:-1]:
                             asex.write(ele+",")
                         asex.write(tmp_list[-1]+"\n")
