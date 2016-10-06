@@ -93,10 +93,11 @@ class CreateFeaturesArray:
 
 class SelectRandomList:
     """Class to select a random list pof user for validation"""
-    def __init__(self,outFile,dict_validation):
+    def __init__(self,outFile,dict_validation,segmList):
         self.outFile_name = outFile
         self.dict_validation=dict_validation
         self.dict_training={}
+        self.segmList=segmList
         logging.info('Created Object random lists to be use in training ad validation')
 
 
@@ -115,12 +116,18 @@ class SelectRandomList:
     def PrintRandomLists(self):
         logging.info('Printing the dictionaries to ut files')
         with open(self.outFile_name+'_valid','w') as out:
+            for item in self.segmList[:-1]:
+                out.write(str(item)+',')
+            out.write(str(self.segmList[-1])+'\n')
             writer = csv.writer(out,delimiter=',')
 #            writer.writerow(self.dict_validation.keys())
 #            writer.writerows(zip(*self.dict_validation.values()))
             for key, value in self.dict_validation.items():
                 writer.writerow(value)
         with open(self.outFile_name+'_train','w') as out:
+            for item in self.segmList[:-1]:
+                out.write(str(item)+',')
+            out.write(str(self.segmList[-1])+'\n')
             writer = csv.writer(out,delimiter=',')
             for key, value in self.dict_training.items():
                 writer.writerow(value)
@@ -143,7 +150,7 @@ def main(inFile,outFile,allSegmts):
 #    pprint(dict_users)
     logging.info("Random selection of lists for training and validation using %i lines for training"%NUM_TRAINING)
     logging.warning("IF THE DIMENSION OF THE TRAINING SET IS 0, THE SELECTION WILL BE DONE IN THE CLASSIFICATION SCRIPT")
-    random_lists_ob=SelectRandomList(outFile,dict_users)
+    random_lists_ob=SelectRandomList(outFile,dict_users,segmList)
     random_lists_ob.SelectRandomList()
     random_lists_ob.PrintRandomLists()
     logging.info("END")

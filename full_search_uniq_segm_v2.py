@@ -7,9 +7,15 @@ from pprint import pprint
 import operator
 
 
-SOGLIA_PERC=0.5
+#SOGLIA_PERC=0.5
+#SOGLIA_COUNT_F=500
+#SOGLIA_COUNT_M=500
+SOGLIA_PERC=0.3
 SOGLIA_COUNT_F=500
 SOGLIA_COUNT_M=500
+
+
+
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
