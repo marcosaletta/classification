@@ -91,13 +91,13 @@ class CreateFeaturesArray:
                 if find==1:
                     if has_sex==1:
                         num_sex+=1
-                        sex.write(str(code)+',')
+                        sex.write(str(code)+'|')
                         for ele in tmp_list[:-1]:
                             sex.write(ele+",")
                         sex.write(tmp_list[-1]+"\n")
                     else:
                         num_asex+=1
-                        asex.write(str(code)+',')
+                        asex.write(str(code)+'|')
                         for ele in tmp_list[:-1]:
                             asex.write(ele+",")
                         asex.write(tmp_list[-1]+"\n")
