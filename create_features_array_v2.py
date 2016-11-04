@@ -6,6 +6,7 @@ import logging
 from pprint import pprint
 import operator
 import random
+import time
 
 
 # SOGLIA_PERC=0.3
@@ -31,7 +32,7 @@ def usage(msg):
    print("Usage: %s -o file output" % sys.argv[0])
    print("Usage: %s -l file with the list of segments (vertical)" % sys.argv[0])
    print("Usage: %s -h help\n" % sys.argv[0])
-   print("Example :-f  hashu_for_trining  -o output_file.txt \n"%sys.argv[0])
+   print("Example %s :-f  hashu_for_trining  -o output_file.txt \n"%sys.argv[0])
    raise SystemExit
 
 
@@ -138,6 +139,7 @@ class SelectRandomList:
 
 def main(inFile,outFile,allSegmts):
     logging.info("START")
+    start_time = time.clock()
     logging.info("Creation of segments list")
     segmList_ob=SegmentsList(allSegmts)
     segmList=segmList_ob.CreateList()
@@ -154,6 +156,8 @@ def main(inFile,outFile,allSegmts):
     random_lists_ob.SelectRandomList()
     random_lists_ob.PrintRandomLists()
     logging.info("END")
+    print(time.clock() - start_time, "seconds")
+
 
 
 
@@ -179,6 +183,6 @@ if __name__=="__main__":
        allSegmts=str(opts['-l'])
    if '-h' in opts:
       usage('msg')
-   if ('-f' not in opts==True and '-o' not in opts==True and '-m' not in opts==True and '-h' not in opts==True):
+   if '-f' not in opts and '-o' not in opts and '-m' not in opts and '-h' not in opts:
        usage('0')
    main(inFile,outFile,allSegmts)

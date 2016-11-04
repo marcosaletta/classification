@@ -32,8 +32,9 @@ def usage(msg):
 #   print( "Usage: %s -i  input-file\n" % sys.argv[0]
    print("Usage: %s -f file input wit segments and sex" % sys.argv[0])
    print("Usage: %s -o file output" % sys.argv[0])
+   print("Usage: %s -m file mapping" % sys.argv[0])
    print("Usage: %s -h help\n" % sys.argv[0])
-   print("Example :-f  hashu_for_trining  -o output_file.txt \n"%sys.argv[0])
+   print("Example: %s -f  hashu_for_trining  -o output_file.txt \n"%sys.argv[0])
    raise SystemExit
 
 
@@ -202,6 +203,6 @@ if __name__=="__main__":
       file_Mapping=str(opts['-m'])
    if '-h' in opts:
       usage('msg')
-   if ('-f' not in opts==True and '-o' not in opts==True and '-m' not in opts==True and '-h' not in opts==True):
+   if'-f' not in opts and '-o' not in opts and '-m' not in opts and '-h' not in opts:
        usage('0')
    main(inFile,outFile,file_Mapping)
