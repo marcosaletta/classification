@@ -6,6 +6,7 @@ import logging
 from pprint import pprint
 import operator
 import random
+import time
 
 
 # SOGLIA_PERC=0.3
@@ -31,7 +32,7 @@ def usage(msg):
    print("Usage: %s -o file output" % sys.argv[0])
    print("Usage: %s -l file with the list of segments (vertical)" % sys.argv[0])
    print("Usage: %s -h help\n" % sys.argv[0])
-   print("Example :-f  hashu_for_trining  -o output_file.txt \n"%sys.argv[0])
+   print("Example %s :-f  hashu_for_trining  -o output_file.txt \n"%sys.argv[0])
    raise SystemExit
 
 
@@ -93,10 +94,11 @@ class CreateFeaturesArray:
 
 class SelectRandomList:
     """Class to select a random list pof user for validation"""
-    def __init__(self,outFile,dict_validation):
+    def __init__(self,outFile,dict_validation,segmList):
         self.outFile_name = outFile
         self.dict_validation=dict_validation
         self.dict_training={}
+        self.segmList=segmList
         logging.info('Created Object random lists to be use in training ad validation')
 
 
@@ -115,12 +117,18 @@ class SelectRandomList:
     def PrintRandomLists(self):
         logging.info('Printing the dictionaries to ut files')
         with open(self.outFile_name+'_valid','w') as out:
+            for item in self.segmList[:-1]:
+                out.write(str(item)+',')
+            out.write(str(self.segmList[-1])+'\n')
             writer = csv.writer(out,delimiter=',')
 #            writer.writerow(self.dict_validation.keys())
 #            writer.writerows(zip(*self.dict_validation.values()))
             for key, value in self.dict_validation.items():
                 writer.writerow(value)
         with open(self.outFile_name+'_train','w') as out:
+            for item in self.segmList[:-1]:
+                out.write(str(item)+',')
+            out.write(str(self.segmList[-1])+'\n')
             writer = csv.writer(out,delimiter=',')
             for key, value in self.dict_training.items():
                 writer.writerow(value)
@@ -131,6 +139,7 @@ class SelectRandomList:
 
 def main(inFile,outFile,allSegmts):
     logging.info("START")
+    start_time = time.clock()
     logging.info("Creation of segments list")
     segmList_ob=SegmentsList(allSegmts)
     segmList=segmList_ob.CreateList()
@@ -143,10 +152,12 @@ def main(inFile,outFile,allSegmts):
 #    pprint(dict_users)
     logging.info("Random selection of lists for training and validation using %i lines for training"%NUM_TRAINING)
     logging.warning("IF THE DIMENSION OF THE TRAINING SET IS 0, THE SELECTION WILL BE DONE IN THE CLASSIFICATION SCRIPT")
-    random_lists_ob=SelectRandomList(outFile,dict_users)
+    random_lists_ob=SelectRandomList(outFile,dict_users,segmList)
     random_lists_ob.SelectRandomList()
     random_lists_ob.PrintRandomLists()
     logging.info("END")
+    print(time.clock() - start_time, "seconds")
+
 
 
 
@@ -172,6 +183,6 @@ if __name__=="__main__":
        allSegmts=str(opts['-l'])
    if '-h' in opts:
       usage('msg')
-   if ('-f' not in opts==True and '-o' not in opts==True and '-m' not in opts==True and '-h' not in opts==True):
+   if '-f' not in opts and '-o' not in opts and '-m' not in opts and '-h' not in opts:
        usage('0')
    main(inFile,outFile,allSegmts)

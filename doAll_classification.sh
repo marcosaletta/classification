@@ -8,11 +8,14 @@ CMS_HOME=/home/liquida/UserSex
 WDIR=/home/liquida/UserSex/data/workingdir
 SDIR_KRUX=/home/liquida/UserSex/scripts/script_krux
 SDIR_KERAS=/home/liquida/UserSex/scripts/script_keras/scripts
-MODEL_DIR=/home/liquida/UserSex/scripts/script_keras/models
-MODEL_WEIGHT=model_10k4training_small_set.h5
-MODEL_JSON=model_10k4training_small_set.json
-MODEL_EV=model_evaluation
+MODEL_DIR=/home/liquida/UserSex/scripts/script_keras/models/
+MODEL_WEIGHT=model_NN/model_10k4training_small_set.h5
+MODEL_JSON=model_NN/model_10k4training_small_set.json
+MODEL_SVC=model_SVC/test_svm_lin_100K_NO_DEC_ECC_small_set_model.pkl
+MODEL_RF=model_RF/RandClass_10k_train_69_list_train_model.pkl
+MODEL_EV=model_check
 MODEL_PRED=model_predictions
+MODEL_COMBINED=model_combined
 ARCHIVE_DIR=/home/liquida/UserSex/data/archive
 LOG_DIR=/home/liquida/UserSex/data/logs
 ASM_DIR=audience-segment-map
@@ -67,9 +70,24 @@ python3 FeaturesArray4Prediction.py -f ${WDIR}/${ASM_FILE} -o ${WDIR}/${LISTS_US
 echo "Moving to ${SDIR_KERAS}"
 cd ${SDIR_KERAS}
 echo "EVALUATE model on the users with sex info"
-python keras_load_model_bigData.py -w ${MODEL_DIR}/${MODEL_WEIGHT} -j ${MODEL_DIR}/${MODEL_JSON} -f ${WDIR}/${LISTS_USERS_WITH_SEX} -o ${WDIR}/${MODEL_EV}
+echo "NN"
+python keras_load_model_bigData.py -w ${MODEL_DIR}/${MODEL_WEIGHT} -j ${MODEL_DIR}/${MODEL_JSON} -f ${WDIR}/${LISTS_USERS_WITH_SEX} -o ${WDIR}/${MODEL_EV}_NN
+echo "RF"
+python LoadModelSVC_or_RandClass.py -f ${WDIR}/${LISTS_USERS_WITH_SEX} -o ${WDIR}/${MODEL_EV}_RF -m ${MODEL_DIR}/${MODEL_RF} -s 1 -t RandomForest
+echo "SVM"
+python LoadModelSVC_or_RandClass.py -f ${WDIR}/${LISTS_USERS_WITH_SEX} -o ${WDIR}/${MODEL_EV}_SVC -m ${MODEL_DIR}/${MODEL_SVC} -s 1 -t SVC
 echo "EVALUATE model on the users withOUT sex info"
-python keras_load_model_bigData.py -w ${MODEL_DIR}/${MODEL_WEIGHT} -j ${MODEL_DIR}/${MODEL_JSON} -f ${WDIR}/${LISTS_USERS_NO_SEX} -o ${WDIR}/${MODEL_PRED}
+echo "NN"
+python keras_load_model_bigData.py -w ${MODEL_DIR}/${MODEL_WEIGHT} -j ${MODEL_DIR}/${MODEL_JSON} -f ${WDIR}/${LISTS_USERS_NO_SEX} -o ${WDIR}/${MODEL_PRED}_NN
+echo "RF"
+python LoadModelSVC_or_RandClass.py -f ${WDIR}/${LISTS_USERS_NO_SEX} -o ${WDIR}/${MODEL_PRED}_RF -m ${MODEL_DIR}/${MODEL_RF} -s 0 -t RandomForest
+echo "SVM"
+python LoadModelSVC_or_RandClass.py -f ${WDIR}/${LISTS_USERS_NO_SEX} -o ${WDIR}/${MODEL_PRED}_SVC -m ${MODEL_DIR}/${MODEL_SVC} -s 0 -t SVC
+echo "COMBINING PREDICTIONS WITH VOTING"
+echo "VOTING WITH SEX"
+python Voting4Classification.py -r /${WDIR}/${MODEL_EV}_RF -n ${WDIR}/${MODEL_EV}_NN -s ${WDIR}/${MODEL_EV}_SVC -o ${WDIR}/${MODEL_COMBINED}
+echo "EVALUATE PERFORMANCE AFTER VOTING"
+python CheckVotingPerformance.py -v ${WDIR}/${MODEL_COMBINED} -s ${WDIR}/${LISTS_USERS_WITH_SEX} -o ${WDIR}/${MODEL_COMBINED}_voting_performance
 # copy to keras-class
 echo "Exporting to ${KERAS_BUCKET}"
 export AWS_DEFAULT_PROFILE=banzaimedia
